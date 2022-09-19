@@ -11,7 +11,7 @@ class Main:
         first_come_first_served = schedular.firstComeFirstServed()
         shorest_job = schedular.shortestJob()
         priority = schedular.priority()
-        robin_round = schedular.roundRobin()
+        schedular.roundRobin()
         
         chart = Chart()
         chart.scheduler_chart([first_come_first_served, shorest_job, priority])
@@ -23,5 +23,14 @@ class Main:
         mips.run()
         
 if __name__ == "__main__":
-    # Main().cpu()
+    """
+        CPU -ны зарцуулсан хугацааг 4 алгоритмаар тооцов. 
+        * First come first out
+        * Shortest job
+        * Priority
+        * Robin-round (Графикгүй)
+    """
+    Main().cpu()
+    
+    """Компьютерын зааврын хугацааг тооцов. Тооцсон хугацаагаа MIPS -рүү шилжүүлэв."""
     Main().mips()

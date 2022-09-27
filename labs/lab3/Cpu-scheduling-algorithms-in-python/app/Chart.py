@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 
 class Chart:
     def scheduler_chart(self, datas):
-        label_list = ['First Come First Served', 'Shorest Job', 'Priority', 'Round-Robin']
+        label_list = ['First Come First Served', 'Shortes Job', 'Priority', 'Round-Robin']
         label_cnt = 0
         for data in datas:
             y_axis = [15, 25, 35, 45]

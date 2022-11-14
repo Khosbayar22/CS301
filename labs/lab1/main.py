@@ -52,4 +52,4 @@ class Lab1:
 if __name__ == '__main__':
     result = Lab1()
     result.findRamSize()
-    result.findExecutingTime()
+    # result.findExecutingTime()

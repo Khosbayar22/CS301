@@ -70,6 +70,7 @@ class Lab2:
                 sequence = list(line.strip().split())
                 for i in table:
                     cnt = sequence.count(i['instruction'])
+                    print(cnt)
                     sum_cpi.append(cnt * i['cpi'] * i['cycle_time'])
                 print(f"Зааврыг ажлуулах нийт хугацаа: {sum(sum_cpi)} нано сек\n")
         file.close()
@@ -84,6 +85,6 @@ class Lab2:
 
 if __name__ == '__main__':
     result = Lab2()
-    result.findExecutionTime()
+    # result.findExecutionTime()
     result.totalInstructionTime()
-    result.findGerts()
+    # result.findGerts()

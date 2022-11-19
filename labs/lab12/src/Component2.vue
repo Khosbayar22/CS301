@@ -5,9 +5,12 @@
       <div style="display: flex; margin-bottom: 32px">
         <div class="cylinder" style="margin-right: 16px">
           <div class="input-container">
-            <div class="input-item" v-for="i in memory" :key="i">
-              <span>{{ i.address }}</span>
-              <input type="checkbox" :checked="i.state">
+            <div class="input-item" v-for="i in main_memory" :key="i">
+              <span style="margin-right: 4px">{{ i }}</span>
+              <div v-if="!isFreeMemory(i)" class="memory-block"></div>
+              <div v-else class="memory-block" :style="`background-color: #${isFreeMemory(i).color}`">
+                {{ isFreeMemory(i).next }}
+              </div>
             </div>
           </div>
         </div>
@@ -16,12 +19,12 @@
             <tr>
               <th>Файл нэр</th>
               <th>Эхлэх хаяг</th>
-              <th>Дуусах хаяг</th>
+              <th>Файлын урт</th>
             </tr>
-            <tr v-for="i in data" :key="i">
+            <tr v-for="i in table_data" :key="i">
               <td>{{ i.file_name }}</td>
-              <td>{{ i.start_id }}</td>
-              <td>{{ i.end_id }}</td>
+              <td>{{ i.start_index }}</td>
+              <td>{{ i.file_length }}</td>
             </tr>
           </table>
         </div>
@@ -30,12 +33,12 @@
         <form>
           <label for="file_name">Файл нэр</label><br>
           <input type="text" id="file_name" v-model="file_name"><br>
-          <label for="start_id">Эхлэх хаяг</label><br>
-          <input type="number" id="start_id" v-model="start_id"><br>
+          <label for="start_index">Эхлэх хаяг</label><br>
+          <input type="number" id="start_index" v-model="start_index"><br>
           <label for="length">Файлын урт</label><br>
-          <input type="number" id="length" v-model="end_id"><br>
+          <input type="number" id="length" v-model="file_length"><br>
           <br>
-          <button @click="addData()" type='button'>Нэмэх</button>
+          <button @click="allocateMemory()" type='button'>Нэмэх</button>
         </form>
       </div>
     </div>
@@ -48,46 +51,97 @@ export default {
   data() {
     return {
       file_name: null,
-      start_id: null,
-      end_id: null,
-      data: [{
-        "file_name": "count",
-        "start_id": 9,
-        "end_id": 25,
-      }],
-      memory: []
+      start_index: null,
+      file_length: null,
+      main_memory: [],
+      free_memory: [],
+      allocated_memory: [],
+      table_data: [],
     }
   },
   mounted() {
     this.setMemory()
   },
   methods: {
+    getRandom() {
+      if (this.free_memory.length <= 0) {
+        return
+      }
+      const random_index = Math.floor((Math.random() * this.free_memory.length))
+      console.log('random_index', random_index)
+      const index = this.free_memory.indexOf(random_index);
+      console.log('index', index)
+      if (index > -1) {
+        this.free_memory.splice(index, 1);
+      }
+      return index
+    },
     setMemory() {
       const length = 32;
-      const memory = []
-      for (let i = 0; i < length; i++) {
-        const data = this.data.find(j => j.start_id === i);
-        if (data) {
-          for (let j = data.start_id; j < data.start_id + data.end_id; j++) {
-            memory.push({address: i, state: true})
-            i++;
-          }
-        }
-        memory.push({address: i, state: false})
-      }
-      this.memory = memory;
+      this.main_memory = Array(length).fill(null).map((_, i) => i);
+      this.free_memory = Array(length).fill(null).map((_, i) => i);
     },
-    addData() {
-      this.data.push({
-        file_name: this.file_name,
-        start_id: this.start_id,
-        length: this.end_id,
-      })
-      for (let i = this.start_id; i < (this.start_id + this.end_id); i++) {
-        this.memory.find(j => j.address === i).state = true
-        console.log(this.memory.find(j => j.address === i))
+    allocateMemory() {
+      const color = Math.floor(Math.random() * 16777215).toString(16)
+
+      const allocated_memory = []
+      let current = this.start_index
+
+      const index = this.free_memory.indexOf(current);
+      if (index > -1) {
+        this.free_memory.splice(index, 1);
       }
-    }
+
+      for (let i = 0; i < this.file_length; i += 1) {
+        const removedItem = this.getRandom()
+        if (removedItem) {
+          if (i === this.file_length) {
+            allocated_memory.push({
+              'address': current,
+              'next': '-1',
+              'color': color
+            })
+          }
+          allocated_memory.push({
+            'address': current,
+            'next': removedItem,
+            'color': color
+          })
+          current = removedItem;
+        } else {
+          return;
+        }
+      }
+
+      this.allocated_memory = [...allocated_memory]
+
+      this.table_data.push({
+        'file_name': this.file_name,
+        'start_index': this.start_index,
+        'file_length': this.file_length,
+      })
+    },
+    isFreeMemory(index) {
+      const tmp = this.allocated_memory.find((i) => i.address === index)
+      if (tmp) {
+        return tmp
+      }
+      return false;
+    },
   }
 }
 </script>
+
+<style>
+.input-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.memory-block {
+  width: 10px;
+  height: 10px;
+  background-color: #ddd;
+}
+</style>

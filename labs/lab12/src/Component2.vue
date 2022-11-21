@@ -67,7 +67,7 @@ export default {
       if (this.free_memory.length <= 0) {
         return
       }
-      const random_index = Math.floor((Math.random() * this.free_memory.length))
+      const random_index = Math.floor((Math.random() * this.free_memory.length)) - 1
       this.free_memory = this.free_memory.filter((i) => i !== random_index)
       return random_index
     },
@@ -81,8 +81,12 @@ export default {
 
       const allocated_memory = []
       let current = this.start_index
+      const start_length = this.free_memory.length
       this.free_memory = this.free_memory.filter((i) => i !== current)
-
+      if (start_length === this.free_memory.length) {
+        alert('Эхлэх цэг буруу байна.')
+        return
+      }
       for (let i = 0; i < this.file_length; i += 1) {
         if (i === this.file_length - 1) {
           allocated_memory.push({

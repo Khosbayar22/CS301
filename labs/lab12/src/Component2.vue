@@ -68,15 +68,10 @@ export default {
         return
       }
       const random_index = Math.floor((Math.random() * this.free_memory.length))
-      console.log('random_index', random_index)
-      const index = this.free_memory.indexOf(random_index);
-      console.log('index', index)
-      if (index > -1) {
-        this.free_memory.splice(index, 1);
-      }
-      return index
+      this.free_memory = this.free_memory.filter((i) => i !== random_index)
+      return random_index
     },
-    setMemory() {
+    setMemory() { 
       const length = 32;
       this.main_memory = Array(length).fill(null).map((_, i) => i);
       this.free_memory = Array(length).fill(null).map((_, i) => i);
@@ -86,34 +81,28 @@ export default {
 
       const allocated_memory = []
       let current = this.start_index
-
-      const index = this.free_memory.indexOf(current);
-      if (index > -1) {
-        this.free_memory.splice(index, 1);
-      }
+      this.free_memory = this.free_memory.filter((i) => i !== current)
 
       for (let i = 0; i < this.file_length; i += 1) {
-        const removedItem = this.getRandom()
-        if (removedItem) {
-          if (i === this.file_length) {
-            allocated_memory.push({
-              'address': current,
-              'next': '-1',
-              'color': color
-            })
-          }
+        if (i === this.file_length - 1) {
+          allocated_memory.push({
+            'address': current,
+            'next': '-1',
+            'color': color
+          })
+        }
+        else {
+          const removedItem = this.getRandom()
           allocated_memory.push({
             'address': current,
             'next': removedItem,
             'color': color
           })
           current = removedItem;
-        } else {
-          return;
         }
       }
 
-      this.allocated_memory = [...allocated_memory]
+      this.allocated_memory = this.allocated_memory.concat(allocated_memory);
 
       this.table_data.push({
         'file_name': this.file_name,
